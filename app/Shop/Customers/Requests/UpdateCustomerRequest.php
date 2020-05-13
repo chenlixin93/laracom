@@ -25,8 +25,8 @@ class UpdateCustomerRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => ['required'],
-            'email' => ['required', 'email', Rule::unique('customers')->ignore($this->segment(3))]
+            /*'name' => ['required'],
+            'email' => ['required', 'email', Rule::unique('customers')->ignore($this->segment(3))]*/
         ];
     }
 }

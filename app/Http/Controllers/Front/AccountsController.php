@@ -9,6 +9,8 @@ use App\Http\Controllers\Controller;
 use App\Shop\Orders\Order;
 use App\Shop\Orders\Transformers\OrderTransformable;
 
+use App\MicroApi\Services\UserService;
+
 class AccountsController extends Controller
 {
     use OrderTransformable;
@@ -24,6 +26,11 @@ class AccountsController extends Controller
     private $courierRepo;
 
     /**
+     * @var UserService
+     */
+    private $userService;
+
+    /**
      * AccountsController constructor.
      *
      * @param CourierRepositoryInterface $courierRepository
@@ -31,9 +38,11 @@ class AccountsController extends Controller
      */
     public function __construct(
         CourierRepositoryInterface $courierRepository,
-        CustomerRepositoryInterface $customerRepository
+        CustomerRepositoryInterface $customerRepository,
+        UserService $userService
     ) {
         $this->customerRepo = $customerRepository;
+        $this->courierRepo = $courierRepository;
         $this->courierRepo = $courierRepository;
     }
 
@@ -55,5 +64,15 @@ class AccountsController extends Controller
             'orders' => $this->customerRepo->paginateArrayResults($orders->toArray(), 15),
             'addresses' => $addresses
         ]);
+    }
+
+    public function profile(Request $request)
+    {
+        $token = $request->cookie('jwt-token');
+        if (empty($token) || !$this->userService->isAuth($token)) {
+            return '尚未登录';
+        }
+        $user = session(md5($token));
+        dd($user);
     }
 }

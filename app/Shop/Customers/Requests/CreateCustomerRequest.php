@@ -14,9 +14,9 @@ class CreateCustomerRequest extends BaseFormRequest
     public function rules()
     {
         return [
-            'name' => ['required'],
+            /*'name' => ['required'],
             'email' => ['required', 'email', 'unique:customers'],
-            'password' => ['required', 'min:8']
+            'password' => ['required', 'min:8']*/
         ];
     }
 }
