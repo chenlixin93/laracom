@@ -10,6 +10,7 @@ use App\Shop\Orders\Order;
 use App\Shop\Orders\Transformers\OrderTransformable;
 
 use App\MicroApi\Services\UserService;
+use Illuminate\Http\Request;
 
 class AccountsController extends Controller
 {
@@ -43,7 +44,7 @@ class AccountsController extends Controller
     ) {
         $this->customerRepo = $customerRepository;
         $this->courierRepo = $courierRepository;
-        $this->courierRepo = $courierRepository;
+        $this->userService = $userService;
     }
 
     public function index()

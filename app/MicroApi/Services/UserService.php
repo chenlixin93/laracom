@@ -107,4 +107,20 @@ class UserService
         $result = $this->decode($response->getBody()->getContents());
         return  $result->valid;
     }
+
+    public function getByEmail($email)
+    {
+        $path = $this->servicePrefix . '/get';
+        $user = new UserItem();
+        $user->email = $email;
+        $options = ['json' => $user];
+        try {
+            $response = HttpClient::post($path, $options);
+        } catch (\Exception $exception) {
+            Log::error("MicroApi.UserService.getByEmail Call Failed: " . $exception->getMessage());
+            throw new RpcException("调用远程服务失败");
+        }
+        $result = $this->decode($response->getBody()->getContents());
+        return isset($result->user) ? $result->user : null;
+    }
 }
