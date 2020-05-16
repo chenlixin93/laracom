@@ -3,6 +3,7 @@
 namespace App\Shop\Customers\Requests;
 
 use App\Shop\Base\BaseFormRequest;
+use App\Rules\UniqueEmail;
 
 class RegisterCustomerRequest extends BaseFormRequest
 {
@@ -14,9 +15,9 @@ class RegisterCustomerRequest extends BaseFormRequest
     public function rules()
     {
         return [
-            /*'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:customers',
-            'password' => 'required|string|min:6|confirmed',*/
+            'name' => 'required|string|max:255',
+            'email' => ['required', 'string', 'email', 'max:255', new UniqueEmail],
+            'password' => 'required|string|min:6|confirmed',
         ];
     }
 }

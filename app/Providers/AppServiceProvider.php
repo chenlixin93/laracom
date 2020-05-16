@@ -6,6 +6,7 @@ use Illuminate\Support\ServiceProvider;
 use Laravel\Cashier\Cashier;
 
 use GuzzleHttp\Client as HttpClient;
+use App\MicroApi\Services\UserService;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -35,6 +36,11 @@ class AppServiceProvider extends ServiceProvider
                     'Content-Type' => 'application/json'
                 ]
             ]);
+        });
+
+        // 以单例模式绑定用户服务到服务容器
+        $this->app->singleton('microUserService', function ($app) {
+            return new UserService();
         });
     }
 }
