@@ -35,6 +35,13 @@ class JwtGuard implements Guard
     protected $storageKey;
 
     /**
+     * Indicates if the logout method has been called.
+     *
+     * @var bool
+     */
+    protected $loggedOut = false;
+
+    /**
      * Create a new authentication guard.
      *
      * @param  \Illuminate\Contracts\Auth\UserProvider  $provider
@@ -152,5 +159,11 @@ class JwtGuard implements Guard
         $this->request = $request;
 
         return $this;
+    }
+
+    public function logout()
+    {
+        $this->user = null;
+        $this->loggedOut = true;
     }
 }

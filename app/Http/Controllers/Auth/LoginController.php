@@ -6,6 +6,9 @@ use App\Shop\Admins\Requests\LoginRequest;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cookie;
+
 class LoginController extends Controller
 {
     /*
@@ -75,5 +78,19 @@ class LoginController extends Controller
         $this->incrementLoginAttempts($request);
 
         return $this->sendFailedLoginResponse($request);
+    }
+
+    /**
+     * Log the user out of the application.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function logout(Request $request)
+    {
+        $this->guard()->logout();
+        // 清除cookie
+        Cookie::queue(Cookie::forget('jwt_token'));
+        return $this->loggedOut($request) ?: redirect('/');
     }
 }
