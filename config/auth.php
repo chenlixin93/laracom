@@ -15,7 +15,8 @@ return [
 
     'defaults' => [
         'guard' => 'jwt',
-        'passwords' => 'users',
+        'passwords' => 'service',
+        //为了在 PasswordBroker 中读取 UserProvider 时，返回的是基于微服务接口的 MicroUserProvider，而不是基于本地数据库的
     ],
 
     /*
@@ -122,6 +123,9 @@ return [
             'table' => 'password_resets',
             'expire' => 60,
         ],
+        'service' => [
+            'provider' => 'micro_user',
+        ]
     ],
 
 ];

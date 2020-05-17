@@ -33,6 +33,7 @@ class MicroUserProvider implements UserProvider
     public function __construct($model)
     {
         $this->model = $model;
+        // microUserService 是以单例模式绑定用户服务到服务容器
         $this->userService = resolve('microUserService');
     }
 
@@ -90,48 +91,52 @@ class MicroUserProvider implements UserProvider
     /**
      * Retrieve a user by the given credentials.
      * 根据用户邮箱和密码获取认证 JWT Token
-     * 
-     * @param  array $credentials
-     * @return string
+     *
+     * @param array $credentials
+     * @return UserItem|Authenticatable|null
+     * @throws AuthenticationException
      */
     public function retrieveByCredentials(array $credentials)
     {
-        if (empty($credentials) ||
+        if (empty($credentials) ||empty($credentials['email']) ||
             (count($credentials) === 1 &&
                 array_key_exists('password', $credentials))) {
-            return;
+            return null;
         }
 
         try {
-            $token = $this->userService->auth($credentials);
+            $user = $this->userService->getByEmail($credentials['email']);
         } catch (RpcException $exception) {
-            throw new AuthenticationException("认证失败：邮箱和密码不匹配");
+            throw new AuthenticationException("认证失败：对应邮箱尚未注册");
         }
 
-        return $token;
+        $model = $this->createModel();
+        $model->fillAttributes($user);
+        return $model;
     }
 
     /**
      * Validate a user against the given credentials.
      * 验证 JWT Token 是否仍然有效
      *
-     * @param  \Illuminate\Contracts\Auth\Authenticatable $user
-     * @param  array $credentials
+     * @param Authenticatable $user
+     * @param array $credentials
      * @return bool
+     * @throws AuthenticationException
      */
     public function validateCredentials(Authenticatable $user, array $credentials)
     {
-        if (empty($credentials['token'])) {
-            return false;
-        }
-
         try {
-            $valid = $this->userService->isAuth($credentials['token']);
+            if (empty($credentials['jwt_token'])) {
+                $token = $this->userService->auth($credentials);
+            } else {
+                $token = $this->userService->isAuth($credentials['jwt_token']);
+            }
         } catch (RpcException $exception) {
-            throw new AuthenticationException("认证失败：令牌失效，请重新认证");
+            $message = empty($credentials['jwt_token']) ? '注册邮箱与密码不匹配' : '令牌失效';
+            throw new AuthenticationException("认证失败：" . $message);
         }
-
-        return $valid;
+        return $token;
     }
 
     /**

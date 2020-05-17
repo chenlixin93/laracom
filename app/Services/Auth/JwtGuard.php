@@ -90,13 +90,11 @@ class JwtGuard implements Guard
      */
     public function login(array $credentials)
     {
-        $token = $this->provider->retrieveByCredentials($credentials);
+        // 此时 retrieveByCredentials 返回用户模型实例，而不是之前的令牌字符串
+        $user = $this->provider->retrieveByCredentials($credentials);
 
-        // If an implementation of UserInterface was returned, we'll ask the provider
-        // to validate the user against the given credentials, and if they are in
-        // fact valid we'll log the users into the application and return true.
-        if ($token) {
-            $user = $this->provider->retrieveByToken(null, $token);
+        $token = null;
+        if ($user && $token = $this->provider->validateCredentials($user, $credentials)) {
             $this->setUser($user);
         }
 

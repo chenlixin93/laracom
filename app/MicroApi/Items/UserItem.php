@@ -2,14 +2,20 @@
 namespace App\MicroApi\Items;
 
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Auth\Passwords\CanResetPassword;
+use Illuminate\Notifications\RoutesNotifications;
+use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 
-class UserItem implements Authenticatable
+class UserItem implements Authenticatable, CanResetPasswordContract
 {
+    use RoutesNotifications, CanResetPassword;
+    
     public $id;
     public $name;
     public $email;
     public $password;
     public $status;
+    public $remember_token;
 
     protected $hidden = ['password'];
 
@@ -82,7 +88,7 @@ class UserItem implements Authenticatable
      */
     public function getRememberToken()
     {
-        // TODO: Implement getRememberToken() method.
+        return $this->remember_token;
     }
 
     /**
@@ -93,7 +99,7 @@ class UserItem implements Authenticatable
      */
     public function setRememberToken($value)
     {
-        // TODO: Implement setRememberToken() method.
+        $this->remember_token = $value;
     }
 
     /**
@@ -103,6 +109,6 @@ class UserItem implements Authenticatable
      */
     public function getRememberTokenName()
     {
-        // TODO: Implement getRememberTokenName() method.
+        return 'remember_token';
     }
 }
