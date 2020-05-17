@@ -69,11 +69,6 @@ class AccountsController extends Controller
 
     public function profile(Request $request)
     {
-        $token = $request->cookie('jwt-token');
-        if (empty($token) || !$this->userService->isAuth($token)) {
-            return '尚未登录';
-        }
-        $user = session(md5($token));
-        dd($user);
+        dd($request->user());
     }
 }

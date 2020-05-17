@@ -42,15 +42,17 @@ class RegisterController extends Controller
     /**
      * @param RegisterCustomerRequest $request
      * @return \Illuminate\Http\RedirectResponse
-     * @throws RpcException
+     * @throws RpcException|AuthenticationException
      */
     public function register(RegisterCustomerRequest $request)
     {
         $data = $request->except('_method', '_token');
-        $user = $this->create($data);
-        $token = $this->userService->auth($data);  // 获取 Token
-        session([md5($token) => $user]);  // 存储用户信息
-
-        return redirect()->route('user.profile')->cookie('jwt-token', $token);
+        if ($user = $this->create($data)) {
+            $token = Auth::login($data);
+            return redirect()->route('user.profile')->cookie('jwt-token', $token);
+        } else {
+            throw new AuthenticationException('注册失败，请重试');
+        }
+        
     }
 }

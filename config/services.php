@@ -37,7 +37,9 @@ return [
 
     'micro' => [
         'api_gateway' => env('MICRO_API_GATEWAY', 'http://laracom-micro-api:8080'),
-        'timeout' => env('MICRO_TIMEOUT', 3.0)
+        'timeout' => env('MICRO_TIMEOUT', 3.0),
+        'jwt_key' => env('MICRO_JWT_KEY', 'laracomUserTokenKeySecret'),
+        'jwt_algorithms' => env('MICRO_JWT_ALGORITHMS', 'HS256'),
     ]
 
 ];

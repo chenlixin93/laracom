@@ -63,10 +63,10 @@ class LoginController extends Controller
             return $this->sendLockoutResponse($request);
         }
 
-        $details = $request->only('email', 'password');
-        $details['status'] = 1;
-        if (auth()->attempt($details)) {
-            return $this->sendLoginResponse($request);
+        $credentials = $request->only('email', 'password');
+        if ($token = auth()->login($credentials)) {
+            $this->clearLoginAttempts($request);
+            return redirect()->route('user.profile')->cookie('jwt_token', $token);
         }
 
         // If the login attempt was unsuccessful we will increment the number of attempts
