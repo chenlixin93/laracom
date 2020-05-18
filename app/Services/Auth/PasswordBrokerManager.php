@@ -20,4 +20,26 @@ class PasswordBrokerManager extends BasePasswordBrokerManager
     {
         return new ServiceTokenRepository();
     }
+
+    /**
+     * Resolve the given broker.
+     *
+     * @param  string  $name
+     * @return PasswordBroker
+     *
+     * @throws InvalidArgumentException
+     */
+    protected function resolve($name)
+    {
+        $config = $this->getConfig($name);
+
+        if (is_null($config)) {
+            throw new InvalidArgumentException("密码重置器 [{$name}] 未定义");
+        }
+
+        return new PasswordBroker(
+            $this->createTokenRepository($config),
+            $this->app['auth']->createUserProvider($config['provider'] ?? null)
+        );
+    }
 }

@@ -40,6 +40,8 @@ return [
         'timeout' => env('MICRO_TIMEOUT', 3.0),
         'jwt_key' => env('MICRO_JWT_KEY', 'laracomUserTokenKeySecret'),
         'jwt_algorithms' => env('MICRO_JWT_ALGORITHMS', 'HS256'),
+        'broker_host' => env('MICRO_BROKER_HOST', 'laracom-nats'),
+        'broker_port' => env('MICRO_BROKER_PORT', '4222'),
     ]
 
 ];
