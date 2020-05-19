@@ -1,30 +1,14 @@
 <?php
-
 namespace App\Http\Controllers\Front;
 
-use App\Shop\Couriers\Repositories\Interfaces\CourierRepositoryInterface;
-use App\Shop\Customers\Repositories\CustomerRepository;
-use App\Shop\Customers\Repositories\Interfaces\CustomerRepositoryInterface;
+use App\Services\Customer\UserService;
 use App\Http\Controllers\Controller;
 use App\Shop\Orders\Order;
 use App\Shop\Orders\Transformers\OrderTransformable;
 
-use App\MicroApi\Services\UserService;
-use Illuminate\Http\Request;
-
 class AccountsController extends Controller
 {
     use OrderTransformable;
-
-    /**
-     * @var CustomerRepositoryInterface
-     */
-    private $customerRepo;
-
-    /**
-     * @var CourierRepositoryInterface
-     */
-    private $courierRepo;
 
     /**
      * @var UserService
@@ -34,41 +18,31 @@ class AccountsController extends Controller
     /**
      * AccountsController constructor.
      *
-     * @param CourierRepositoryInterface $courierRepository
-     * @param CustomerRepositoryInterface $customerRepository
+     * @param UserService $userService
      */
-    public function __construct(
-        CourierRepositoryInterface $courierRepository,
-        CustomerRepositoryInterface $customerRepository,
-        UserService $userService
-    ) {
-        $this->customerRepo = $customerRepository;
-        $this->courierRepo = $courierRepository;
+    public function __construct(UserService $userService)
+    {
         $this->userService = $userService;
     }
 
     public function index()
     {
-        $customer = $this->customerRepo->findCustomerById(auth()->user()->id);
+        // 用户信息
+        $user = auth()->user();
 
-        $customerRepo = new CustomerRepository($customer);
-        $orders = $customerRepo->findOrders(['*'], 'created_at');
-
+        // 分页订单信息
+        $orders = $this->userService->getPaginatedOrdersByUserId($user->id);
         $orders->transform(function (Order $order) {
             return $this->transformOrder($order);
         });
 
-        $addresses = $customerRepo->findAddresses();
+        // 地址信息
+        $addresses = $this->userService->getAddressesByUserId($user->id);
 
         return view('front.accounts', [
-            'customer' => $customer,
-            'orders' => $this->customerRepo->paginateArrayResults($orders->toArray(), 15),
+            'customer' => $user,
+            'orders' => $orders,
             'addresses' => $addresses
         ]);
-    }
-
-    public function profile(Request $request)
-    {
-        dd($request->user());
     }
 }
