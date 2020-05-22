@@ -8,6 +8,8 @@ use Laravel\Cashier\Cashier;
 use GuzzleHttp\Client as HttpClient;
 use App\MicroApi\Services\UserService;
 
+use Illuminate\Support\Facades\Schema;
+
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -17,6 +19,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        Schema::defaultStringLength(191);
         Cashier::useCurrency(config('cart.currency'), config('cart.currency_symbol'));
     }
 
